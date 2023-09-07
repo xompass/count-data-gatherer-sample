@@ -27,7 +27,7 @@ async function GetCameras(customerId, assetIds) {
     include: {
       relation: 'sensors',
       scope: {
-        fields: ['id', 'name', 'relativeId', 'parameters.points'],
+        fields: ['id', 'name', 'relativeId', 'parameters.points', 'type'],
         where: { type: 'CrossLineMultiRecognition' },
       },
     },

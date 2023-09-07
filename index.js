@@ -32,6 +32,7 @@ const socket = io(`https://sion.vsaas.ai?api_key=${apiKey}`, {
 socket.on('connect', async () => {
   // Requests
   const assets = await GetCameras(customerId, assetIds);
+  console.log(assets);
 
   const lastSensor = assets[0]?.sensors?.[0];
   if (!lastSensor) {
@@ -46,6 +47,7 @@ socket.on('connect', async () => {
 
   // summaries are ordered by from DESC
   const summaries = await GetSensorSummaries(lastSensor.id, hourStart, hourEnd);
+  console.log(summaries);
 
   let datasetsStart = new Date();
   datasetsStart.setHours(datasetsStart.getHours(), 0, 0, 0);
@@ -56,6 +58,7 @@ socket.on('connect', async () => {
   // Get sensor datasets for the current hour
   const datasetsEnd = new Date();
   const datasets = await GetSensorDatasets(lastSensor.id, datasetsStart, datasetsEnd);
+  console.log(datasets);
 
   // Subscribe to Asset data
   await SubscribeToAssetsData(customerId, socket, assetIds);
@@ -64,6 +67,9 @@ socket.on('connect', async () => {
   socket.on('asset.data', (data) => {
     const body = data.body;
     const assetId = data.from.id;
+
+    console.log(data);
+
     for (const sensorId in body) {
       // Note that the data is from all sensors in the asset.
       // We load only the CrossLineMultiRecognition sensors, so we need to filter the data.
