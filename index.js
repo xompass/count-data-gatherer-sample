@@ -68,8 +68,6 @@ socket.on('connect', async () => {
     const body = data.body;
     const assetId = data.from.id;
 
-    console.log(data);
-
     for (const sensorId in body) {
       // Note that the data is from all sensors in the asset.
       // We load only the CrossLineMultiRecognition sensors, so we need to filter the data.
