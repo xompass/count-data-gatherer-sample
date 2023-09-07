@@ -22,7 +22,11 @@ const {
   GetSensorSummaries,
   GetSensorDatasets,
   SubscribeToAssetsData,
+  UnsubscribeFromAssetsData,
 } = require('./requests');
+
+// Handle exit
+onExit();
 
 // Connect to Socket.io
 const socket = io(`https://sion.vsaas.ai?api_key=${apiKey}`, {
@@ -87,3 +91,44 @@ socket.on('connect', async () => {
     }
   });
 });
+
+function onExit() {
+  async function disconnect() {
+    if (!socket) {
+      return process.exit(0);
+    }
+
+    try {
+      await UnsubscribeFromAssetsData(customerId, socket, assetIds);
+    } catch (e) {}
+
+    socket.disconnect();
+    console.log('Disconnected');
+    process.exit(0);
+  }
+
+  process.on('exit', () => {
+    disconnect();
+  });
+
+  const signals = [
+    'SIGHUP',
+    'SIGINT',
+    'SIGQUIT',
+    'SIGILL',
+    'SIGTRAP',
+    'SIGABRT',
+    'SIGBUS',
+    'SIGFPE',
+    'SIGUSR1',
+    'SIGSEGV',
+    'SIGUSR2',
+    'SIGTERM',
+  ];
+
+  for (let signal of signals) {
+    process.on(signal, () => {
+      disconnect();
+    });
+  }
+}

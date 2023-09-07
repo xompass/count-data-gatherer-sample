@@ -6,6 +6,7 @@ module.exports = {
   GetSensorSummaries,
   GetSensorDatasets,
   SubscribeToAssetsData,
+  UnsubscribeFromAssetsData,
 };
 
 async function makeGETRequest(url) {
@@ -110,4 +111,25 @@ async function SubscribeToAssetsData(customerId, socket, assetIds) {
       channels: { data: true },
     });
   }
+}
+
+async function UnsubscribeFromAssetsData(customerId, socket, assetIds) {
+  const socketId = socket.id;
+  const where = {
+    id: { inq: assetIds },
+  };
+
+  const url = `${apiUrl}/customers/${customerId}/sockets/${socketId}/unsubscribe/assets?where=${JSON.stringify(
+    where
+  )}`;
+
+  const headers = {
+    'Content-Type': 'application/json',
+    api_key: apiKey,
+  };
+
+  return fetch(url, {
+    method: 'DELETE',
+    headers,
+  });
 }
